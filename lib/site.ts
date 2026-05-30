@@ -42,7 +42,7 @@ export const catalogProducts: CatalogItem[] = [
   },
   {
     id: "sixten-c02",
-    name: "reloj araba negro mate",
+    name: "SKMEI 2382",
     price: 21.50,
     originalPrice: 42,
     imageUrl: "/modelos/caballero2.jpg",

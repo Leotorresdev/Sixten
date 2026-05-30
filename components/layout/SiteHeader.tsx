@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, MessageCircleMore, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, type MouseEvent } from "react";
 import { siteConfig } from "@/lib/site";
 const navLinks = [
   { href: "#hero", label: "Inicio" },
@@ -30,9 +30,29 @@ export function SiteHeader() {
 
   const headerSolid = scrolled || mobileMenuOpen;
 
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
+  const handleMobileNavClick = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+      if (!href.startsWith("#")) return;
+      event.preventDefault();
+      const targetId = href.slice(1);
+      closeMobileMenu();
+      document.body.style.overflow = "";
+      window.setTimeout(() => {
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          window.history.pushState(null, "", href);
+        }
+      }, 50);
+    },
+    [closeMobileMenu],
+  );
+
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 w-full max-w-full overflow-x-hidden transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-[100] w-full transition-all duration-500 ${
         headerSolid
           ? "border-b border-[var(--sixten-aqua)]/10 bg-[var(--sixten-black)]/92 backdrop-blur-2xl shadow-[0_4px_40px_rgba(4,7,18,0.8)]"
           : "bg-transparent"
@@ -40,7 +60,7 @@ export function SiteHeader() {
     >
       {/* Accent line top */}
       <div className="h-[1.5px] w-full bg-gradient-to-r from-transparent via-[var(--sixten-aqua)]/55 to-transparent" />
-       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-14">
+       <div className="relative z-[101] mx-auto max-w-7xl px-5 sm:px-8 lg:px-14">
       <div className="flex h-[76px] items-center justify-between gap-6">
          <motion.a
             href="#hero"
@@ -109,7 +129,9 @@ export function SiteHeader() {
         <button
             type="button"
             onClick={() => setMobileMenuOpen((v) => !v)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[var(--sixten-ivory)]/70 backdrop-blur-sm transition-all hover:border-[var(--sixten-aqua)]/30 hover:text-[var(--sixten-aqua)] md:hidden"
+            className="relative z-[102] inline-flex h-10 w-10 shrink-0 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[var(--sixten-ivory)]/70 backdrop-blur-sm transition-all hover:border-[var(--sixten-aqua)]/30 hover:text-[var(--sixten-aqua)] md:hidden"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-menu"
             aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
           >
             {mobileMenuOpen ? <X size={18} strokeWidth={1.8} /> : <Menu size={18} strokeWidth={1.8} />}
@@ -119,23 +141,27 @@ export function SiteHeader() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-nav-menu"
             key="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-full overflow-hidden border-t border-white/[0.06] bg-[var(--sixten-black)] md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="relative z-[101] w-full border-t border-white/[0.06] bg-[var(--sixten-black)] md:hidden"
           >
-            <nav className="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-1 px-5 py-6 sm:px-8">
+            <nav
+              aria-label="Navegación móvil"
+              className="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-1 px-5 py-6 sm:px-8"
+            >
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.href}
                   href={link.href}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.06 }}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="min-w-0 rounded-lg px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--sixten-ivory)]/65 transition-colors hover:bg-white/[0.04] hover:text-[var(--sixten-champagne)] sm:tracking-[0.28em]"
+                  transition={{ delay: i * 0.04 }}
+                  onClick={(event) => handleMobileNavClick(event, link.href)}
+                  className="min-w-0 touch-manipulation rounded-lg px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--sixten-ivory)]/65 transition-colors hover:bg-white/[0.04] hover:text-[var(--sixten-champagne)] sm:tracking-[0.28em]"
                 >
                   {link.label}
                 </motion.a>
@@ -145,7 +171,8 @@ export function SiteHeader() {
                 href={siteConfig.whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-3 inline-flex w-full min-w-0 items-center justify-center gap-2.5 rounded-full border border-[#25D366]/25 bg-[#25D366]/10 px-4 py-3.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#25D366] transition-all hover:bg-[#25D366]/18 sm:px-6 sm:text-[11px] sm:tracking-[0.22em]"
+                onClick={closeMobileMenu}
+                className="mt-3 inline-flex w-full min-w-0 touch-manipulation items-center justify-center gap-2.5 rounded-full border border-[#25D366]/25 bg-[#25D366]/10 px-4 py-3.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#25D366] transition-all hover:bg-[#25D366]/18 sm:px-6 sm:text-[11px] sm:tracking-[0.22em]"
               >
                 <MessageCircleMore size={16} strokeWidth={1.8} className="shrink-0" />
                 <span className="min-w-0">Contactar por WhatsApp</span>
