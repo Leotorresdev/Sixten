@@ -91,7 +91,7 @@ export const CatalogSection = memo(function CatalogSection() {
         </MotionReveal>
 
         {/* ── GRID DE PRODUCTOS — todos en una sola sección ── */}
-        <div className="grid auto-rows-fr grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+        <div className="grid auto-rows-fr grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-4">
           {catalogProducts.map((product, index) => (
             <MotionReveal key={product.id} delay={index * 0.04}>
               <ProductCard product={product} />
