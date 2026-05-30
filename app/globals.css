@@ -1,26 +1,143 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(0.15 0 0);
+  --foreground: oklch(0.94 0.018 88);
+  --card: oklch(0.2 0 0);
+  --card-foreground: oklch(0.94 0.018 88);
+  --popover: oklch(0.2 0 0);
+  --popover-foreground: oklch(0.94 0.018 88);
+  --primary: oklch(0.81 0.055 86);
+  --primary-foreground: oklch(0.16 0 0);
+  --secondary: oklch(0.28 0 0);
+  --secondary-foreground: oklch(0.94 0.018 88);
+  --muted: oklch(0.23 0 0);
+  --muted-foreground: oklch(0.74 0.015 85);
+  --accent: oklch(0.74 0.01 220);
+  --accent-foreground: oklch(0.15 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.81 0.055 86);
+  --radius: 0.8rem;
+  --sixten-black: #040712;
+  --sixten-smoke: #0b1124;
+  --sixten-ivory: #e2e8f0;
+  --sixten-silver: #cbd5e1;
+  --sixten-champagne: #f1f5f9;
+  --sixten-onyx: #121a36;
+  --sixten-teal: #0284c7;
+  --sixten-aqua: #38bdf8;
+  --sixten-coral: #60a5fa;
+  --sixten-rose: #3b82f6;
+  --sixten-old-gold: #64748b;
+  --sixten-graphite: #1a254c;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    @apply font-sans;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--sixten-black);
+    background-image:
+      radial-gradient(circle at 12% 12%, rgba(56, 189, 248, 0.16), transparent 22%),
+      radial-gradient(circle at 86% 9%, rgba(96, 165, 250, 0.12), transparent 18%),
+      radial-gradient(circle at 75% 72%, rgba(203, 213, 225, 0.08), transparent 23%),
+      linear-gradient(130deg, rgba(56, 189, 248, 0.06), transparent 34%),
+      linear-gradient(35deg, rgba(59, 130, 246, 0.05), transparent 38%),
+      linear-gradient(180deg, #040712 0%, #0b122c 44%, #02040b 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--foreground);
+    font-feature-settings: "liga" 1, "kern" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgba(56, 189, 248, 0.34);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: 0;
+  }
+
+  a,
+  button {
+    @apply transition-colors;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .section-label {
+    @apply text-[10px] font-semibold uppercase tracking-[0.32em] text-(--sixten-aqua);
+  }
+
+  .glass-panel {
+    @apply border border-white/10 bg-white/20 backdrop-blur-xl;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-white via-[var(--sixten-silver)] to-[var(--sixten-aqua)] bg-clip-text text-transparent;
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 44px rgba(56, 189, 248, 0.12), 0 0 28px rgba(96, 165, 250, 0.08);
+  }
+
+  .focus-gold {
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--sixten-aqua)]/20 focus:ring-offset-2 focus:ring-offset-[#0b1124];
+  }
+
+  /* Shimmer animation for CTA button */
+  .btn-shimmer:hover .shimmer-layer {
+    transform: translateX(100%) skewX(-20deg);
+  }
+  .btn-shimmer .shimmer-layer {
+    transition: transform 0.7s ease;
+  }
 }
