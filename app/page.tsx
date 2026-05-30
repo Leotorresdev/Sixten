@@ -8,7 +8,7 @@ import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { siteConfig } from "@/lib/site";
 export default function Home() {
   return (
-    <div className="min-h-screen text-(--sixten-ivory)">
+    <div className="min-h-screen overflow-x-hidden text-(--sixten-ivory)">
       <SiteHeader />
       <main className="px-3 pt-20 sm:px-5 lg:px-8">
         <HeroSection

@@ -18,11 +18,23 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [mobileMenuOpen]);
+
+  const headerSolid = scrolled || mobileMenuOpen;
+
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
-        scrolled
-                  ? "border-b border-[var(--sixten-aqua)]/10 bg-[var(--sixten-black)]/92 backdrop-blur-2xl shadow-[0_4px_40px_rgba(4,7,18,0.8)]"
+      className={`fixed inset-x-0 top-0 z-50 w-full max-w-full overflow-x-hidden transition-all duration-500 ${
+        headerSolid
+          ? "border-b border-[var(--sixten-aqua)]/10 bg-[var(--sixten-black)]/92 backdrop-blur-2xl shadow-[0_4px_40px_rgba(4,7,18,0.8)]"
           : "bg-transparent"
       }`}
     >
@@ -104,7 +116,7 @@ export function SiteHeader() {
           </button>
       </div>
        </div>
-        <AnimatePresence>
+      <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             key="mobile-menu"
@@ -112,30 +124,31 @@ export function SiteHeader() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-                 className="overflow-hidden border-t border-white/[0.06] bg-[var(--sixten-black)]/96 backdrop-blur-2xl md:hidden"
+            className="w-full overflow-hidden border-t border-white/[0.06] bg-[var(--sixten-black)] md:hidden"
           >
-            <nav className="flex flex-col gap-1 px-5 py-6">
+            <nav className="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-1 px-5 py-6 sm:px-8">
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.href}
                   href={link.href}
-                  initial={{ opacity: 0, x: -14 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.06 }}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--sixten-ivory)]/65 transition-all hover:bg-white/[0.04] hover:text-[var(--sixten-champagne)] hover:pl-6"
+                  className="min-w-0 rounded-lg px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--sixten-ivory)]/65 transition-colors hover:bg-white/[0.04] hover:text-[var(--sixten-champagne)] sm:tracking-[0.28em]"
                 >
                   {link.label}
                 </motion.a>
               ))}
-             <div className="mt-4 h-px w-full bg-white/[0.06]" />
+              <div className="mt-4 h-px w-full bg-white/[0.06]" />
               <a
                 href={siteConfig.whatsappUrl}
                 target="_blank"
-                rel="noreferrer"className="mt-3 inline-flex items-center justify-center gap-2.5 rounded-full border border-[#25D366]/25 bg-[#25D366]/10 px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.26em] text-[#25D366] transition-all hover:bg-[#25D366]/18"
+                rel="noreferrer"
+                className="mt-3 inline-flex w-full min-w-0 items-center justify-center gap-2.5 rounded-full border border-[#25D366]/25 bg-[#25D366]/10 px-4 py-3.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#25D366] transition-all hover:bg-[#25D366]/18 sm:px-6 sm:text-[11px] sm:tracking-[0.22em]"
               >
-                <MessageCircleMore size={16} strokeWidth={1.8} />
-                Contactar por WhatsApp
+                <MessageCircleMore size={16} strokeWidth={1.8} className="shrink-0" />
+                <span className="min-w-0">Contactar por WhatsApp</span>
               </a>
             </nav>
           </motion.div>

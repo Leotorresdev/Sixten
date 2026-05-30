@@ -10,7 +10,7 @@ import { catalogProducts } from "@/lib/site";
 
 export const CatalogSection = memo(function CatalogSection() {
   return (
-    <section id="catalog" className="relative px-2 py-20 lg:py-28">
+    <section id="catalog" className="relative overflow-x-hidden px-2 py-20 lg:py-28">
       {/* Fondos decorativos */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-px w-[70%] -translate-x-1/2 bg-gradient-to-r from-transparent via-[var(--sixten-aqua)]/30 to-transparent" />
