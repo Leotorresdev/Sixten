@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { ArrowRight, Gem, ShieldCheck, Watch, Zap } from "lucide-react";
 
 import { MotionReveal } from "@/components/ui/MotionReveal";
 import { HeroSectionProps } from "@/interfaces/Hero";
+import { HeroVideoBackground } from "@/components/sections/HeroVideoBackground";
 
 const metrics = [
   { label: "Modelos disponibles", value: "10+", icon: Watch },
@@ -22,157 +20,73 @@ export function HeroSection({
   ctaLabel,
   ctaHref,
 }: HeroSectionProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // Evitar llamado síncrono a setState dentro del efecto (causa "cascading renders").
-    // Programamos la activación en el siguiente frame o task para que no disparar renders encadenados.
-    let id: number;
-    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
-      id = window.requestAnimationFrame(() => setMounted(true));
-    } else {
-      id = window.setTimeout(() => setMounted(true), 0);
-    }
-    return () => {
-      if (typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function") {
-        window.cancelAnimationFrame(id);
-      } else {
-        clearTimeout(id);
-      }
-    };
-  }, []);
-
   return (
     <section
       id="hero"
-      className="relative mt-3 overflow-hidden rounded-[1.45rem] border border-white/8 sm:rounded-[2.25rem] lg:mt-8"
+      className="relative mt-3 min-h-[min(88vh,720px)] overflow-hidden rounded-[1.45rem] border border-white/8 sm:min-h-[620px] sm:rounded-[2.25rem] lg:mt-8"
     >
-       {/* ── IMAGEN DE FONDO (publicidad.jpg) ── */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/publicidad.jpg"
-          alt="Colección Sixten — Relojes de estilo premium"
-          fill
-          priority
-          loading="eager"
-          quality={90}
-          // Aplicamos un filtro para aumentar brillo y saturación
-          style={{ filter: "brightness(1.12) saturate(1.18)" }}
-          className="object-cover object-[64%_center] sm:object-center"
-          sizes="100vw"
-        />
-            {/* Capas de oscurecimiento y color para que el texto sea legible (ligeramente atenuadas) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--sixten-black)]/30 via-[var(--sixten-black)]/18 to-[var(--sixten-black)]/92 sm:bg-gradient-to-r sm:from-[var(--sixten-black)]/88 sm:via-[var(--sixten-black)]/60 sm:to-[var(--sixten-black)]/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--sixten-black)] via-[var(--sixten-black)]/26 to-transparent sm:from-[var(--sixten-black)]/70 sm:via-transparent sm:to-[var(--sixten-black)]/18" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--sixten-black)]/72 to-transparent sm:hidden" />
-        {/* Overlay de color azul platino sutil */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_36%,rgba(56,189,248,0.16),transparent_46%)] sm:bg-[radial-gradient(circle_at_75%_50%,rgba(56,189,248,0.08),transparent_55%)]" />
+      <div className="absolute inset-0 z-0 overflow-hidden rounded-[inherit]">
+        <HeroVideoBackground />
       </div>
-      {/* ── ANIMACIÓN PARALLAX DE LA IMAGEN ── */}
-      <motion.div
-        className="absolute inset-0 z-0 overflow-hidden rounded-[1.45rem] sm:rounded-[2.25rem]"
-        initial={{ scale: 1.08 }}
-        animate={prefersReducedMotion ? { scale: 1 } : { scale: 1 }}
-        transition={{ duration: 1.4, ease: "easeOut" }}
-      >
-        {/* Ken Burns: zoom lento permanente. Animación sólo en cliente montado. */}
-        <motion.div
-          className="absolute inset-0"
-          animate={mounted && !prefersReducedMotion ? { scale: [1, 1.06] } : undefined}
-          transition={mounted && !prefersReducedMotion ? { duration: 14, ease: "linear", repeat: Infinity, repeatType: "reverse" } : undefined}
-        >
-          <Image
-            src="/publicidad.jpg"
-            alt=""
-            aria-hidden="true"
-            fill
-            priority
-            loading="eager"
-            quality={90}
-            className="object-cover object-[64%_center] opacity-0 sm:object-center"
-            sizes="100vw"
-          />
-        </motion.div>
-      </motion.div>
-      {/* ── PARTÍCULAS DECORATIVAS ── */}
-      {/* Partículas: siempre renderizadas en HTML (evita mismatches). Las animaciones se activan tras montaje. */}
-      <>
-        <motion.div
-          className="pointer-events-none absolute right-[10%] top-[15%] z-10 hidden h-2 w-2 rounded-full bg-[var(--sixten-aqua)]/60 sm:block"
-          animate={mounted && !prefersReducedMotion ? { y: [-8, 8], opacity: [0.4, 1, 0.4] } : undefined}
-          transition={mounted && !prefersReducedMotion ? { duration: 3.2, repeat: Infinity, ease: "easeInOut" } : undefined}
-        />
-        <motion.div
-          className="pointer-events-none absolute right-[25%] top-[60%] z-10 hidden h-1.5 w-1.5 rounded-full bg-white/40 sm:block"
-          animate={mounted && !prefersReducedMotion ? { y: [6, -6], opacity: [0.3, 0.8, 0.3] } : undefined}
-          transition={mounted && !prefersReducedMotion ? { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 } : undefined}
-        />
-        <motion.div
-          className="pointer-events-none absolute right-[5%] bottom-[20%] z-10 hidden h-1 w-1 rounded-full bg-[var(--sixten-aqua)]/50 sm:block"
-          animate={mounted && !prefersReducedMotion ? { y: [-4, 4], opacity: [0.5, 1, 0.5] } : undefined}
-          transition={mounted && !prefersReducedMotion ? { duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 } : undefined}
-        />
-      </>
-      {/* ── CONTENIDO ── */}
-      <div className="relative z-10 flex min-h-[720px] flex-col justify-end px-5 pb-10 pt-28 sm:min-h-[620px] sm:justify-center sm:px-10 sm:py-20 lg:px-16 lg:py-24">
-        {/* Línea lateral izquierda decorativa */}
-        <div className="absolute left-0 top-0 h-full w-px bg-gradient-to-b from-[var(--sixten-aqua)]/80 via-[var(--sixten-champagne)]/40 to-transparent" />
+
+      {/* Contenido */}
+      <div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-5 pb-10 pt-28 sm:justify-center sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <div className="absolute left-0 top-0 hidden h-full w-px bg-gradient-to-b from-[var(--sixten-aqua)]/80 via-[var(--sixten-champagne)]/40 to-transparent sm:block" />
+
         <div className="max-w-2xl">
-          {/* Eyebrow badge */}
           <MotionReveal>
-            <div className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--sixten-aqua)]/35 bg-[var(--sixten-black)]/44 px-3 py-2 backdrop-blur-md sm:gap-2.5 sm:px-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--sixten-aqua)]/35 bg-[var(--sixten-black)]/50 px-3 py-2 backdrop-blur-md sm:gap-2.5 sm:px-4">
               <span className="relative flex h-2 w-2">
-                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--sixten-aqua)] opacity-70" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--sixten-aqua)] opacity-70" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--sixten-aqua)]" />
               </span>
-                     <Zap size={12} className="text-[var(--sixten-aqua)]" strokeWidth={2.5} />
+              <Zap size={12} className="text-[var(--sixten-aqua)]" strokeWidth={2.5} />
               <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[var(--sixten-aqua)] sm:text-[10px] sm:tracking-[0.34em]">
                 {eyebrow}
               </p>
             </div>
           </MotionReveal>
-           <MotionReveal delay={0.12}>
-            <h1 className="mt-5 max-w-[11ch] text-5xl font-semibold leading-[0.92] tracking-tight text-white drop-shadow-[0_8px_28px_rgba(0,0,0,0.45)] sm:mt-7 sm:max-w-none sm:text-7xl lg:text-[86px]">
+
+          <MotionReveal delay={0.1}>
+            <h1 className="mt-5 max-w-[11ch] text-5xl font-semibold leading-[0.92] tracking-tight text-white drop-shadow-[0_8px_28px_rgba(0,0,0,0.5)] sm:mt-7 sm:max-w-none sm:text-7xl lg:text-[86px]">
               {title}
-              <motion.span
-                className="mt-2 block bg-gradient-to-r from-white via-[var(--sixten-silver)] to-[var(--sixten-aqua)] bg-clip-text text-transparent"
-                initial={{ backgroundPosition: "0% 50%" }}
-                animate={mounted && !prefersReducedMotion ? { backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] } : undefined}
-                transition={mounted && !prefersReducedMotion ? { duration: 6, repeat: Infinity, ease: "linear" } : undefined}
-              >
+              <span className="mt-2 block bg-gradient-to-r from-white via-[var(--sixten-silver)] to-[var(--sixten-aqua)] bg-clip-text text-transparent">
                 {headline}
-              </motion.span>
-              </h1>
+              </span>
+            </h1>
           </MotionReveal>
-          {/* Descripción */}
-          <MotionReveal delay={0.18}>
-             <p className="mt-5 max-w-md text-sm leading-6 text-[var(--sixten-ivory)]/78 drop-shadow-[0_6px_18px_rgba(0,0,0,0.55)] sm:mt-6 sm:max-w-lg sm:text-lg sm:leading-8">
+
+          <MotionReveal delay={0.16}>
+            <p className="mt-5 max-w-md text-sm leading-6 text-[var(--sixten-ivory)]/85 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] sm:mt-6 sm:max-w-lg sm:text-lg sm:leading-8">
               {description}
             </p>
           </MotionReveal>
-          {/* CTAs */}
-          <MotionReveal delay={0.24}>
+
+          <MotionReveal delay={0.22}>
             <div className="mt-7 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
               <a
                 href={ctaHref}
                 target="_blank"
                 rel="noreferrer"
-                 className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-full px-7 py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-[#040712] transition-all hover:shadow-[0_16px_44px_rgba(56,189,248,0.30)] sm:w-auto sm:px-9 sm:text-[11px] sm:tracking-[0.25em]"
+                className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-full px-7 py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-[#040712] transition-all hover:shadow-[0_16px_44px_rgba(56,189,248,0.30)] sm:w-auto sm:px-9 sm:text-[11px] sm:tracking-[0.25em]"
               >
-                 <span className="absolute inset-0 bg-gradient-to-r from-white via-[var(--sixten-silver)] to-[var(--sixten-aqua)]" />
+                <span className="absolute inset-0 bg-gradient-to-r from-white via-[var(--sixten-silver)] to-[var(--sixten-aqua)]" />
                 <span className="relative">{ctaLabel}</span>
-                <ArrowRight size={18} className="relative transition-transform group-hover:translate-x-1" />
+                <ArrowRight
+                  size={18}
+                  className="relative transition-transform group-hover:translate-x-1"
+                />
               </a>
               <a
                 href="#catalog"
-                  className="inline-flex w-full items-center justify-center rounded-full border border-[var(--sixten-aqua)]/35 bg-[var(--sixten-black)]/34 px-7 py-4 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--sixten-ivory)] backdrop-blur-md transition-all hover:border-[var(--sixten-aqua)]/60 hover:bg-[var(--sixten-aqua)]/18 hover:text-white sm:w-auto sm:px-9 sm:text-[11px] sm:tracking-[0.25em]"
-              > Ver colección
+                className="inline-flex w-full items-center justify-center rounded-full border border-[var(--sixten-aqua)]/35 bg-[var(--sixten-black)]/40 px-7 py-4 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--sixten-ivory)] backdrop-blur-md transition-all hover:border-[var(--sixten-aqua)]/60 hover:bg-[var(--sixten-aqua)]/18 hover:text-white sm:w-auto sm:px-9 sm:text-[11px] sm:tracking-[0.25em]"
+              >
+                Ver colección
               </a>
             </div>
           </MotionReveal>
-          {/* Métricas */}
-          <MotionReveal delay={0.34}>
+
+          <MotionReveal delay={0.3}>
             <div className="mt-9 grid grid-cols-3 gap-3 border-t border-white/10 pt-6 sm:mt-12 sm:gap-8 sm:pt-8">
               {metrics.map((metric) => {
                 const Icon = metric.icon;
@@ -183,19 +97,19 @@ export function HeroSection({
                       <span className="text-xl font-semibold text-white sm:text-3xl">
                         {metric.value}
                       </span>
-                  </div>
-                        <p className="text-[8px] uppercase tracking-[0.12em] text-[var(--sixten-ivory)]/50 sm:text-[10px] sm:tracking-[0.22em]">
+                    </div>
+                    <p className="text-[8px] uppercase tracking-[0.12em] text-[var(--sixten-ivory)]/55 sm:text-[10px] sm:tracking-[0.22em]">
                       {metric.label}
                     </p>
                   </div>
                 );
               })}
             </div>
-          
-           </MotionReveal>
-          </div>
+          </MotionReveal>
         </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-24 bg-gradient-to-t from-[var(--sixten-black)] to-transparent" />
+      </div>
+
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-20 bg-gradient-to-t from-[var(--sixten-black)] to-transparent sm:h-24" />
     </section>
   );
 }
