@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, MessageCircleMore, Sparkles } from "lucide-react";
 
@@ -26,6 +26,7 @@ function calculateDiscount(original: number, current: number): number {
 }
 
 export const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
+  const [currentImage, setCurrentImage] = useState(product.imageUrl);
   const discount = calculateDiscount(product.originalPrice, product.price);
   const productWhatsappUrl = buildWhatsAppUrl(productInfoMessage(product.name));
 
@@ -42,7 +43,7 @@ export const ProductCard = memo(function ProductCard({ product }: ProductCardPro
       <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[1.15rem] border border-white/12 bg-gradient-to-b from-[var(--sixten-smoke)] via-[var(--sixten-black)] to-[#02040b] shadow-xl transition-all duration-500 group-hover:border-[var(--sixten-aqua)]/40 group-hover:shadow-[0_24px_70px_rgba(56,189,248,0.14)] sm:rounded-[1.35rem]">
         <div className="relative mx-1 mt-1 aspect-[4/5.35] overflow-hidden rounded-[0.85rem] bg-[var(--sixten-black)] sm:mx-1.5 sm:mt-1.5 sm:aspect-[4/5.15] sm:rounded-[0.95rem] lg:aspect-[4/4.95]">
           <Image
-            src={product.imageUrl}
+            src={currentImage}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -79,6 +80,23 @@ export const ProductCard = memo(function ProductCard({ product }: ProductCardPro
           <h3 className="line-clamp-2 min-h-[2rem] text-sm font-semibold leading-snug text-white transition-colors group-hover:text-[var(--sixten-aqua)] sm:min-h-0 sm:text-base lg:text-lg">
             {product.name}
           </h3>
+
+          {product.variants && product.variants.length > 0 && (
+            <div className="mt-1 flex items-center gap-2">
+              {product.variants.map((variant, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentImage(variant.imageUrl);
+                  }}
+                  className={`w-4 h-4 rounded-full border-2 transition-transform ${currentImage === variant.imageUrl ? 'border-[var(--sixten-aqua)] scale-125' : 'border-gray-500 hover:border-gray-300'}`}
+                  style={{ backgroundColor: variant.colorCode }}
+                  title={variant.colorName}
+                />
+              ))}
+            </div>
+          )}
 
           <div className="mt-auto flex flex-col gap-1.5 pt-1.5 sm:gap-2 sm:pt-2">
             <span className="text-base font-semibold tracking-tight text-[var(--sixten-aqua)] sm:text-lg">
