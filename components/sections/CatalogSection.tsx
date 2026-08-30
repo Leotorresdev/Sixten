@@ -1,14 +1,19 @@
 "use client";
 
-import { memo } from "react";
-import { motion } from "framer-motion";
+import { memo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Sparkles, Watch } from "lucide-react";
 
 import { MotionReveal } from "@/components/ui/MotionReveal";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { catalogProducts } from "@/lib/site";
+import { catalogProductsCaballero, catalogProductsDamas } from "@/lib/site";
 
 export const CatalogSection = memo(function CatalogSection() {
+  const [activeTab, setActiveTab] = useState<"caballero" | "dama">("caballero");
+  
+  const activeProducts = activeTab === "caballero" ? catalogProductsCaballero : catalogProductsDamas;
+  const totalProducts = catalogProductsCaballero.length + catalogProductsDamas.length;
+
   return (
     <section id="catalog" className="relative overflow-x-hidden px-2 py-20 lg:py-28">
       {/* Fondos decorativos */}
@@ -57,7 +62,7 @@ export const CatalogSection = memo(function CatalogSection() {
               transition={{ delay: 0.15 }}
               className="max-w-xl text-base leading-7 text-[var(--sixten-ivory)]/65 sm:text-lg"
             >
-              Explora nuestra selección curada de {catalogProducts.length} relojes
+              Explora nuestra selección curada de {totalProducts} relojes
             </motion.p>
 
             {/* Badges de confianza */}
@@ -83,20 +88,64 @@ export const CatalogSection = memo(function CatalogSection() {
               <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5">
                 <Watch size={11} className="text-[var(--sixten-aqua)]" />
                 <span className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[var(--sixten-ivory)]/70">
-                  {catalogProducts.length} modelos
+                  {totalProducts} modelos
                 </span>
               </div>
             </motion.div>
           </div>
         </MotionReveal>
 
-        {/* ── GRID DE PRODUCTOS — todos en una sola sección ── */}
+        {/* 🔹 TABS DE CATEGORÍA 🔹 */}
+        <div className="mb-10 flex justify-center">
+          <div className="inline-flex rounded-full border border-white/10 bg-[#161616] p-1.5 shadow-xl">
+            <button
+              onClick={() => setActiveTab("caballero")}
+              className={`relative px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors ${
+                activeTab === "caballero" ? "text-black" : "text-white/60 hover:text-white"
+              }`}
+            >
+              {activeTab === "caballero" && (
+                <motion.div
+                  layoutId="sixten-tab"
+                  className="absolute inset-0 rounded-full bg-[var(--sixten-aqua)]"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10">Caballeros</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("dama")}
+              className={`relative px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors ${
+                activeTab === "dama" ? "text-black" : "text-white/60 hover:text-white"
+              }`}
+            >
+              {activeTab === "dama" && (
+                <motion.div
+                  layoutId="sixten-tab"
+                  className="absolute inset-0 rounded-full bg-[var(--sixten-aqua)]"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10">Damas</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 🔹 GRID DE PRODUCTOS 🔹 */}
         <div className="grid auto-rows-fr grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-4">
-          {catalogProducts.map((product, index) => (
-            <MotionReveal key={product.id} delay={index * 0.04}>
-              <ProductCard product={product} />
-            </MotionReveal>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {activeProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, delay: index * 0.04 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
       </div>
